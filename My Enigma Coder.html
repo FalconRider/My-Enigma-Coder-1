@@ -1,0 +1,310 @@
+<html>
+
+
+<!   README 
+
+--- for my design and coding practice only. Improve at will.---
+
+      Enigma Style
+      --------------------
+      Only 26 Capital Letter keys.
+      No punctuation keys.
+      Near,  but not QWERTY keyboard
+      Output in 6 character blocks
+      Cannot use letter to represent itself.
+      Therefore 25 shift max.
+
+      The KEY here is this offset number  1 to 25.
+      Default 1, set as wish.
+
+       This version not meant to simulate full
+       WWII Enigma capabilities. Only a simple Caesar shift cipher.
+       No rotors or cables, yet. Separate decoder in works.
+
+       Files saved in Local Storage as CSVs
+
+       Inspect - Application Tab - Storage -LocalStorage
+       Name - storedEnigmaMessage
+
+       F5 to reset and manually delete LS file.
+       
+       PRODUCION NOTES ----------------
+
+       300 + lines
+
+       Ver. 2020 08 03 004
+
+       ASCII Caps A to Z  codes 65 to 90
+
+       Lotsa console logging left in
+          
+>
+
+
+<head>
+
+	<title>  Enigma Style 	</title>
+
+
+  <style>
+
+      body {
+         background-color: brown;
+         border: black; 
+         border: 5px solid black;
+      }
+
+      h1, h3 {
+         
+         color:white;
+         border: black;
+      }
+
+      
+
+    .row div{
+      border: 5px solid black;
+      height: 40px;
+      width: 60px;
+      float: left;
+      font: courier bold;
+      background-color: lightyellow;
+      border-radius: 50%;
+      text-align: center;
+      padding-top: 5px;
+      font-size: 20pt;
+
+        
+   }
+  
+  
+    
+
+    .row {
+    	clear: both;
+
+    }
+
+    button{
+      background-color: orange;
+      width:132px;
+      margin:30px;
+      padding: 3px;
+      height: 50px;
+      border-radius: 50%;
+
+    }
+
+    .row div:hover {
+  		background-color: yellow;
+	}
+
+       
+       
+  
+
+  p {
+        color:yellow;
+        font-size: 20pt;
+
+      }
+
+  #message {
+      	font-size: 20pt;
+      	color:white;
+      }
+
+  #cipherText{
+  	font-size: 20pt;
+      	color:white;
+
+
+
+
+
+  }    
+
+  <!   To write comments in CSS   -  PUT AT END  >
+
+    
+  </style>
+
+ 
+
+</head>
+
+<!xxxxxxxxpg2020xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx hb
+
+<body>
+
+<h1>            Enigma Machine Style    <h1>
+
+<h3> Version 1 Caesar Cipher  ENCODER ONLY   Enter Shift Factor  1 to 25</h3> 
+
+
+<h3><input type="number" id="myNumber" value="1"></h3>
+
+<hr>
+
+
+<!To write comments in HTML use  >
+ 
+
+<div>
+
+<! row 1>	
+
+   <div class = "row">
+   		
+   		<div id = 's1' onclick="choose('Q')">Q </div>
+   		<div id = 's2' onclick="choose('W')">W</div>
+   		<div id = 's3' onclick="choose('E')">E</div>
+   		<div id = 's4' onclick="choose('R')">R</div>
+   		<div id = 's5' onclick="choose('T')">T</div>
+   		<div id = 's6' onclick="choose('Z')">Z</div>
+   		<div id = 's7' onclick="choose('U')">U</div>
+   		<div id = 's8' onclick="choose('I')">I</div>
+        <div id = 's9' onclick="choose('O')">O</div>
+   </div>
+   
+<! row 2>	
+
+   <div class = "row">
+   		
+   		<div id = 'shortblock'></div>
+   		<div id = 's10' onclick="choose('A')">A</div>
+   		<div id = 's11' onclick="choose('S')">S</div>
+   		<div id = 's12' onclick="choose('D')">D</div>
+   		<div id = 's13' onclick="choose('F')">F</div>
+   		<div id = 's14' onclick="choose('G')">G</div>
+   		<div id = 's15' onclick="choose('H')">H</div>
+   		<div id = 's16' onclick="choose('J')">J</div>
+        <div id = 's17' onclick="choose('K')">K</div>
+   </div>
+  
+
+<! row 3>
+   <div class = "row">  
+   		
+   		
+   		<div id = 's18' onclick="choose('P')">P</div>
+   		<div id = 's19' onclick="choose('Y')">Y</div>
+   		<div id = 's20' onclick="choose('X')">X</div>
+   		<div id = 's21' onclick="choose('C')">C</div>
+   		<div id = 's22' onclick="choose('V')">V</div>
+   		<div id = 's23' onclick="choose('B')">B</div>
+   		<div id = 's24' onclick="choose('N')">N</div>
+        <div id = 's25' onclick="choose('M')">M</div>
+        <div id = 's26' onclick="choose('L')">L</div>
+   </div>
+
+ 
+</div>
+
+
+
+
+<button onclick="saveMe()">SAVE </button>
+
+
+
+<span>
+  <p>YOU TYPED</p>
+<div id = "message"> MESSAGE </div>
+
+<p>CIPHERTEXT<p>
+<div id = "cipherText">CODED MESSAGE</div>
+</span>
+
+<script>
+
+   //To write comments in JavaScript use //
+
+   
+   
+   var message =[];
+   var coded =[];
+   var xx = []
+   var cipherText = [];
+
+   var letters = 0;
+   var shift;
+   var startdiff = 65;  // ascii  A is 65
+   var offset;
+   var keypicked;
+   var keycodeout;
+   var keycharout; 
+
+
+   function saveMe(){
+      localStorage.storedEnigmaMessage = cipherText;
+      console.log ("saved   " + cipherText);
+    }
+
+
+        
+   function choose(key){
+
+      shift = document.getElementById("myNumber").value;
+
+      if (shift > 25 || shift < 1){
+        return
+      }
+
+      shift = shift * 1;
+      startdiff = startdiff * 1;
+
+      keypicked = key.charCodeAt();  
+
+
+
+      console.log("shiftSET    "+ shift);
+
+      offset = startdiff + shift;
+      console.log("what typed  "+ keypicked);
+      
+      
+      console.log("offset     "+ offset);
+
+      //  Player clicks a key xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+      message.push(key); 
+      letters = letters + 1;
+
+      keycodeout= keypicked + offset - 65;
+      if (keycodeout > 90){
+        keycodeout = keycodeout -26
+      }
+      console.log("adj key  "+ keycodeout);
+      
+      //cc= ccc.charCodeAt();
+  
+
+      
+      keycharout =String.fromCharCode(keycodeout)
+      console.log ("keyout     "+ keycharout)
+      
+
+
+      cipherText.push(keycharout);
+      console.log ("letters     "+ letters)
+      console.log("-----------------------")
+      if (letters == 6) {
+      cipherText.push("---");
+      letters = 0;
+    }
+
+  
+      document.getElementById('message').innerHTML = message;
+     
+      document.getElementById('cipherText').innerHTML = cipherText;
+      
+   }
+
+   
+</script>
+
+</body>
+
+
+</html>
